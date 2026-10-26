@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const connectDB = require('./config/db');
 
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
@@ -56,12 +57,36 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // API health check
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'HCM Lite API server is running',
-    timestamp: new Date().toISOString()
-  });
+app.get('/api/health', async (req, res) => {
+  try {
+    await connectDB();
+    res.status(200).json({
+      success: true,
+      message: 'HCM Lite API server and database are running',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Health Check Database Error]:', error);
+    res.status(503).json({
+      success: false,
+      message: 'API is running, but its database is unavailable. Check MONGODB_URI and network access.'
+    });
+  }
+});
+
+// Vercel serverless instances may load this app without running server.js.
+// Ensure database-backed routes have a MongoDB connection before handling them.
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('[Database Request Error]:', error);
+    res.status(503).json({
+      success: false,
+      message: 'Database unavailable. Check the server MONGODB_URI and network access.'
+    });
+  }
 });
 
 // Mount Routes
