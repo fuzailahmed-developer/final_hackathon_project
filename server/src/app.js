@@ -24,7 +24,11 @@ const app = express();
 
 // Allowed Origins for CORS (with credentials for HTTP-only cookies)
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+  ...(process.env.CLIENT_URL || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+  'https://client-ten-flax-uhtnyrriuz.vercel.app',
   'http://localhost:5173',
   'http://127.0.0.1:5173'
 ];
@@ -33,10 +37,13 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost:')) {
+      if (
+        allowedOrigins.includes(origin) ||
+        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)
+      ) {
         return callback(null, true);
       }
-      return callback(null, true); // Dev-friendly fallback
+      return callback(new Error('Origin is not allowed by CORS'));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

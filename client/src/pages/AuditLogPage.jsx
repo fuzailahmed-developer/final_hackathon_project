@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Shield, Filter, X, ChevronLeft, ChevronRight, Search, Clock, User, Tag, Database, Eye } from 'lucide-react';
-
-const API_BASE = '/api';
+import { API_BASE } from '../api/client';
 
 async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('hcm_token');

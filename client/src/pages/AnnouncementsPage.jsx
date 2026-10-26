@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { API_BASE } from '../api/client';
 import {
   Megaphone,
   Plus,
@@ -13,8 +14,6 @@ import {
   Globe,
   UserCheck
 } from 'lucide-react';
-
-const API_BASE = '/api';
 
 async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('hcm_token');

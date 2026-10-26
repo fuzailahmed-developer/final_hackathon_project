@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Bell, Check, CheckCheck, X, Megaphone, Calendar, CreditCard, Info } from 'lucide-react';
-
-const API_BASE = '/api';
+import { API_BASE } from '../../api/client';
 
 async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('hcm_token');
